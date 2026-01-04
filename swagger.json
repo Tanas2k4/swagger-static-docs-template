@@ -1,0 +1,1952 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "PicSocial API",
+    "version": "v1"
+  },
+  "paths": {
+    "/api/Admin/users": {
+      "get": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Retrieves a list of all users in the system (Admin only).",
+        "responses": {
+          "200": {
+            "description": "Returns list of user summaries"
+          },
+          "401": {
+            "description": "Unauthorized (not authenticated)"
+          },
+          "403": {
+            "description": "Forbidden (authenticated but not Admin)"
+          }
+        }
+      }
+    },
+    "/api/Admin/user/{userId}": {
+      "delete": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Deletes a user account and all associated data (posts, photos, reactions, comments, shares, follows, etc.).\r\nOnly Admins can delete other users. Regular users can only delete their own account if somehow accessing this endpoint.",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "The ID of the user to delete.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "true"
+          },
+          "400": {
+            "description": "Xóa người dùng thất bại"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden (not authorized to delete this user)"
+          }
+        }
+      }
+    },
+    "/api/Admin/reports": {
+      "get": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Retrieves all reports submitted in the system (Admin only).",
+        "responses": {
+          "200": {
+            "description": "Returns list of all reports"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden (not Admin)"
+          }
+        }
+      }
+    },
+    "/api/Admin/reports/{postId}": {
+      "get": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Retrieves all reports submitted for a specific post (Admin only).",
+        "parameters": [
+          {
+            "name": "postId",
+            "in": "path",
+            "description": "The ID of the post.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns list of reports for the post"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden (not Admin)"
+          }
+        }
+      }
+    },
+    "/api/Admin/posts": {
+      "get": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Returns the total number of posts in the system (Admin only).",
+        "responses": {
+          "200": {
+            "description": "Returns total post count"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden (not Admin)"
+          }
+        }
+      }
+    },
+    "/api/Auth/register": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Register a new user account.",
+        "description": "Creates a new user using email and password.",
+        "requestBody": {
+          "description": "User registration information",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "201": {
+            "description": "User registered successfully"
+          },
+          "400": {
+            "description": "Invalid registration data"
+          }
+        }
+      }
+    },
+    "/api/Auth/login": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Login with email and password.",
+        "description": "Returns a JWT access token if credentials are valid.",
+        "requestBody": {
+          "description": "User login credentials",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful"
+          },
+          "401": {
+            "description": "Invalid email or password"
+          }
+        }
+      }
+    },
+    "/api/Avatar": {
+      "post": {
+        "tags": [
+          "Avatar"
+        ],
+        "summary": "Upload or update user avatar.",
+        "description": "Uploads a new avatar image for the currently authenticated user.\r\nThe image must be sent as multipart/form-data.",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "Avatar": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              },
+              "encoding": {
+                "Avatar": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Avatar uploaded successfully"
+          },
+          "400": {
+            "description": "No file uploaded"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Avatar"
+        ],
+        "summary": "Delete current user's avatar.",
+        "description": "Removes the avatar image of the currently authenticated user.",
+        "responses": {
+          "200": {
+            "description": "Avatar deleted successfully"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "No avatar to delete"
+          }
+        }
+      }
+    },
+    "/api/Comment/{postId}": {
+      "post": {
+        "tags": [
+          "Comment"
+        ],
+        "summary": "Creates a new comment or reply on a post.",
+        "parameters": [
+          {
+            "name": "postId",
+            "in": "path",
+            "description": "The ID of the post to comment on.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Comment content and optional ParentCommentId for replies.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CommentDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CommentDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CommentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommentCreateDtoResults"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommentCreateDtoResults"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommentCreateDtoResults"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "You don't have permission"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Comment"
+        ],
+        "summary": "Retrieves all root comments and their replies for a post.",
+        "parameters": [
+          {
+            "name": "postId",
+            "in": "path",
+            "description": "The ID of the post.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns array of CommentPostDto",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CommentPostDto"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CommentPostDto"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CommentPostDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Comment/{commentId}": {
+      "delete": {
+        "tags": [
+          "Comment"
+        ],
+        "summary": "Deletes a comment and its replies. Only the comment owner or post owner can delete.",
+        "parameters": [
+          {
+            "name": "commentId",
+            "in": "path",
+            "description": "The ID of the comment to delete.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "postId",
+            "in": "query",
+            "description": "The ID of the post (query parameter).",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Comment deleted"
+          },
+          "401": {
+            "description": "User not found"
+          },
+          "403": {
+            "description": "You cannot delete this comment"
+          },
+          "404": {
+            "description": "Comment not found"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Comment"
+        ],
+        "summary": "Updates the content of a root comment (replies cannot be edited).\r\nOnly the comment owner can update it.",
+        "parameters": [
+          {
+            "name": "commentId",
+            "in": "path",
+            "description": "The ID of the comment to update.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "postId",
+            "in": "query",
+            "description": "The ID of the post (query parameter).",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "New comment content.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CommentDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CommentDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CommentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommentUpdateDtoResults"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommentUpdateDtoResults"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommentUpdateDtoResults"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "User not found"
+          },
+          "404": {
+            "description": "Comment not found or you don't have permission"
+          }
+        }
+      }
+    },
+    "/api/CoverPhoto": {
+      "post": {
+        "tags": [
+          "CoverPhoto"
+        ],
+        "summary": "Uploads or replaces the current user's cover photo.",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "coverPhoto": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              },
+              "encoding": {
+                "coverPhoto": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "cover photo uploaded"
+          },
+          "400": {
+            "description": "not found (no file uploaded)"
+          },
+          "401": {
+            "description": "User not found or unauthorized"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "CoverPhoto"
+        ],
+        "summary": "Deletes the current user's cover photo, if one exists.",
+        "responses": {
+          "200": {
+            "description": "Cover photo deleted successfully"
+          },
+          "400": {
+            "description": "No cover photo to delete"
+          },
+          "401": {
+            "description": "User not found or unauthorized"
+          }
+        }
+      }
+    },
+    "/api/Follow/isFollowing/{userId}": {
+      "get": {
+        "tags": [
+          "Follow"
+        ],
+        "summary": "Checks whether the current authenticated user is following a specific user.",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "The ID of the user to check.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "{ \"message\": true/false }"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/Follow": {
+      "post": {
+        "tags": [
+          "Follow"
+        ],
+        "summary": "Allows the current user to follow another user.",
+        "requestBody": {
+          "description": "Contains the Id of the user to follow.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FollowDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FollowDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/FollowDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Followed successfully"
+          },
+          "400": {
+            "description": "You are already following this user / You cannot follow yourself"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      }
+    },
+    "/api/Follow/{userId}": {
+      "delete": {
+        "tags": [
+          "Follow"
+        ],
+        "summary": "Allows the current user to unfollow another user.",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "The ID of the user to unfollow.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully unfollowed the user."
+          },
+          "400": {
+            "description": "you haven't followed this user before"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      }
+    },
+    "/api/Follow/followers/{id}": {
+      "get": {
+        "tags": [
+          "Follow"
+        ],
+        "summary": "Retrieves the list of followers for a specific user.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The ID of the user whose followers to retrieve.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns list of followers"
+          },
+          "404": {
+            "description": "User not found."
+          }
+        }
+      }
+    },
+    "/api/Follow/following/{id}": {
+      "get": {
+        "tags": [
+          "Follow"
+        ],
+        "summary": "Retrieves the list of users that a specific user is following.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The ID of the user whose following list to retrieve.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns list of followed users"
+          },
+          "404": {
+            "description": "User not found."
+          }
+        }
+      }
+    },
+    "/api/License": {
+      "get": {
+        "tags": [
+          "License"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Photo/{photoId}": {
+      "patch": {
+        "tags": [
+          "Photo"
+        ],
+        "summary": "Updates settings for a specific photo (public visibility and download permission).\r\nOnly the owner of the photo can perform this action.",
+        "parameters": [
+          {
+            "name": "photoId",
+            "in": "path",
+            "description": "The ID of the photo to update.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Contains optional IsPublic and AllowDownload flags to update.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PhotoUpdateDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PhotoUpdateDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/PhotoUpdateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "update successfully"
+          },
+          "401": {
+            "description": "User not found"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Photo"
+        ],
+        "summary": "Retrieves detailed information about a specific photo belonging to a user.",
+        "parameters": [
+          {
+            "name": "photoId",
+            "in": "path",
+            "description": "The ID of the photo.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "description": "The ID of the user who owns the photo (query parameter).",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/PhotoDetailDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PhotoDetailDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PhotoDetailDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Photo not found (data is null)"
+          }
+        }
+      }
+    },
+    "/api/Post": {
+      "post": {
+        "tags": [
+          "Post"
+        ],
+        "summary": "Creates a new post with one or more photos.",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "description": "Optional title/caption for the post."
+                  },
+                  "files": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "binary"
+                    },
+                    "description": "One or more image files to upload."
+                  },
+                  "licenseId": {
+                    "type": "string",
+                    "description": "Optional license ID. If not provided, defaults to \"Royalty-Free\".",
+                    "format": "uuid"
+                  }
+                }
+              },
+              "encoding": {
+                "title": {
+                  "style": "form"
+                },
+                "files": {
+                  "style": "form"
+                },
+                "licenseId": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns PostResponseDto",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostResponseDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostResponseDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "No files uploaded. / Licences not found / Default license 'Royalty-Free' not found in database."
+          },
+          "401": {
+            "description": "User not found"
+          }
+        }
+      }
+    },
+    "/api/Post/{postId}": {
+      "delete": {
+        "tags": [
+          "Post"
+        ],
+        "summary": "Deletes a post and all its associated photos (from database and Google Cloud Storage).\r\nOnly the post owner or an Admin can delete.",
+        "parameters": [
+          {
+            "name": "postId",
+            "in": "path",
+            "description": "The ID of the post to delete.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Post and associated photos deleted successfully."
+          },
+          "401": {
+            "description": "User not found"
+          },
+          "403": {
+            "description": "you don't have permission"
+          },
+          "404": {
+            "description": "Post not found"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Post"
+        ],
+        "summary": "Updates the title and/or license of an existing post.\r\nOnly the post owner can update.",
+        "parameters": [
+          {
+            "name": "postId",
+            "in": "path",
+            "description": "The ID of the post to update.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "Title": {
+                    "type": "string"
+                  },
+                  "LicenseId": {
+                    "type": "string",
+                    "format": "uuid"
+                  }
+                }
+              },
+              "encoding": {
+                "Title": {
+                  "style": "form"
+                },
+                "LicenseId": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns updated PostResponseDto",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostResponseDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostResponseDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "License not found"
+          },
+          "401": {
+            "description": "User not found"
+          },
+          "404": {
+            "description": "Post not found or you do not have permission to update this post."
+          }
+        }
+      }
+    },
+    "/api/Post/{userId}": {
+      "get": {
+        "tags": [
+          "Post"
+        ],
+        "summary": "Retrieves all posts (with public photos only) for a specific user, ordered by newest first.",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "The ID of the user whose posts to retrieve.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns List<PostResponseDto>",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PostResponseDto"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PostResponseDto"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PostResponseDto"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No posts found for the specified user. / User not found."
+          }
+        }
+      }
+    },
+    "/api/Post/view/{postId}": {
+      "get": {
+        "tags": [
+          "Post"
+        ],
+        "summary": "Retrieves a single post by ID, including only public photos.\r\nAccessible to any authenticated user.",
+        "parameters": [
+          {
+            "name": "postId",
+            "in": "path",
+            "description": "The ID of the post to view.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns PostResponseDto",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostResponseDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostResponseDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Post not found."
+          }
+        }
+      }
+    },
+    "/api/Profile/{userId}": {
+      "get": {
+        "tags": [
+          "Profile"
+        ],
+        "summary": "Retrieves the public profile of another user.",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "The ID of the user whose profile to view.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns ProfileUserDto (Location included only if following)",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileUserDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileUserDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileUserDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "user not found"
+          }
+        }
+      }
+    },
+    "/api/Profile/me": {
+      "get": {
+        "tags": [
+          "Profile"
+        ],
+        "summary": "Retrieves the authenticated user's own full profile.",
+        "responses": {
+          "200": {
+            "description": "Returns ProfileUserDto with full information including Location",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileUserDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileUserDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileUserDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      }
+    },
+    "/api/Profile": {
+      "patch": {
+        "tags": [
+          "Profile"
+        ],
+        "summary": "Updates the authenticated user's own profile information.\r\nOnly provided fields will be updated (FirstName, Bio, Location).",
+        "requestBody": {
+          "description": "DTO containing optional fields to update.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProfileUpdateDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProfileUpdateDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProfileUpdateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns updated ProfileUserDto",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileUserDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileUserDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileUserDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      }
+    },
+    "/api/Reaction/{postId}": {
+      "post": {
+        "tags": [
+          "Reaction"
+        ],
+        "summary": "Toggles a like/reaction on a post.\r\nIf the authenticated user has already liked the post, this will unlike it.\r\n\r\nIf not, it will add a like.",
+        "parameters": [
+          {
+            "name": "postId",
+            "in": "path",
+            "description": "The ID of the post to react to.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "{ \"message\": \"liked\" } or { \"message\": \"unLiked\" }"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Post not found"
+          }
+        }
+      }
+    },
+    "/api/Report/{postId}": {
+      "post": {
+        "tags": [
+          "Report"
+        ],
+        "summary": "Submits a report for a post to the administrators.\r\nThe report includes a reason provided by the authenticated user.",
+        "parameters": [
+          {
+            "name": "postId",
+            "in": "path",
+            "description": "The ID of the post being reported.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "Reason": {
+                    "type": "string"
+                  }
+                }
+              },
+              "encoding": {
+                "Reason": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "{report sent"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Post not found"
+          }
+        }
+      }
+    },
+    "/api/Share/{postId}": {
+      "post": {
+        "tags": [
+          "Share"
+        ],
+        "summary": "Shares a post internally or to an external platform.\r\nCreates a new share record and increments the post's share count.",
+        "parameters": [
+          {
+            "name": "postId",
+            "in": "path",
+            "description": "The ID of the post to share.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "Caption": {
+                    "type": "string"
+                  },
+                  "SharePlatform": {
+                    "type": "string"
+                  }
+                }
+              },
+              "encoding": {
+                "Caption": {
+                  "style": "form"
+                },
+                "SharePlatform": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns ShareCreateDto with Message and Share details",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShareCreateDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShareCreateDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShareCreateDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "You don't have permission"
+          },
+          "404": {
+            "description": "user not found / Post not found"
+          }
+        }
+      }
+    },
+    "/api/Share/{shareId}": {
+      "delete": {
+        "tags": [
+          "Share"
+        ],
+        "summary": "Deletes a previously created share.\r\nOnly the user who created the share or an Admin can delete it.\r\nDecrements the post's share count upon successful deletion.",
+        "parameters": [
+          {
+            "name": "postId",
+            "in": "query",
+            "description": "The ID of the original post (required query parameter for validation).",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "shareId",
+            "in": "path",
+            "description": "The ID of the share record to delete.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Share deleted successfully"
+          },
+          "401": {
+            "description": "Unauthorized to delete this share"
+          },
+          "404": {
+            "description": "Current user not found / Share not found / Post not found"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CommentCreateDto": {
+        "type": "object",
+        "properties": {
+          "commentId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "content": {
+            "type": "string",
+            "nullable": true
+          },
+          "createDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "userName": {
+            "type": "string",
+            "nullable": true
+          },
+          "avatar": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CommentCreateDtoResults": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "message": {
+            "type": "string",
+            "nullable": true
+          },
+          "statusCode": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "data": {
+            "$ref": "#/components/schemas/CommentCreateDto"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CommentDto": {
+        "type": "object",
+        "properties": {
+          "parentCommentId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "content": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CommentPostDto": {
+        "type": "object",
+        "properties": {
+          "commentId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "parentCommentId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "userName": {
+            "type": "string",
+            "nullable": true
+          },
+          "avatar": {
+            "type": "string",
+            "nullable": true
+          },
+          "content": {
+            "type": "string",
+            "nullable": true
+          },
+          "createDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "updateDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "replies": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CommentPostDto"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CommentUpdateDto": {
+        "type": "object",
+        "properties": {
+          "commentId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "content": {
+            "type": "string",
+            "nullable": true
+          },
+          "updateDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "userName": {
+            "type": "string",
+            "nullable": true
+          },
+          "avatar": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CommentUpdateDtoResults": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "message": {
+            "type": "string",
+            "nullable": true
+          },
+          "statusCode": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "data": {
+            "$ref": "#/components/schemas/CommentUpdateDto"
+          }
+        },
+        "additionalProperties": false
+      },
+      "FollowDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "LoginDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "password": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "PhotoDetailDto": {
+        "type": "object",
+        "properties": {
+          "photoId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "postId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "userId": {
+            "type": "string",
+            "nullable": true
+          },
+          "allowDownload": {
+            "type": "boolean"
+          },
+          "maxPublicResolution": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "photoXmpMetadataDto": {
+            "$ref": "#/components/schemas/PhotoXmpMetadataDto"
+          },
+          "photoMetadataDto": {
+            "$ref": "#/components/schemas/PhotoMetadataDto"
+          },
+          "createdDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "PhotoMetadataDto": {
+        "type": "object",
+        "properties": {
+          "lens": {
+            "type": "string",
+            "nullable": true
+          },
+          "aperture": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "shutterSpeed": {
+            "type": "string",
+            "nullable": true
+          },
+          "iso": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "cameraModel": {
+            "type": "string",
+            "nullable": true
+          },
+          "location": {
+            "type": "string",
+            "nullable": true
+          },
+          "iptcKeywords": {
+            "type": "string",
+            "nullable": true
+          },
+          "iptcCaption": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "PhotoUpdateDto": {
+        "type": "object",
+        "properties": {
+          "isPublic": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "allowDownload": {
+            "type": "boolean",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "PhotoXmpMetadataDto": {
+        "type": "object",
+        "properties": {
+          "rawXmp": {
+            "type": "string",
+            "nullable": true
+          },
+          "rating": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "caption": {
+            "type": "string",
+            "nullable": true
+          },
+          "keywordsJson": {
+            "type": "string",
+            "nullable": true
+          },
+          "colorLabel": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "PostPhotoDto": {
+        "type": "object",
+        "properties": {
+          "photoId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "originalFileUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "isPublic": {
+            "type": "boolean"
+          },
+          "allowDownload": {
+            "type": "boolean"
+          },
+          "maxPublicResolution": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "PostResponseDto": {
+        "type": "object",
+        "properties": {
+          "postId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "userId": {
+            "type": "string",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "licenseName": {
+            "type": "string",
+            "nullable": true
+          },
+          "photos": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PostPhotoDto"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ProfileUpdateDto": {
+        "type": "object",
+        "properties": {
+          "userName": {
+            "type": "string",
+            "nullable": true
+          },
+          "firstName": {
+            "type": "string",
+            "nullable": true
+          },
+          "bio": {
+            "type": "string",
+            "nullable": true
+          },
+          "location": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ProfileUserDto": {
+        "type": "object",
+        "properties": {
+          "userName": {
+            "type": "string",
+            "nullable": true
+          },
+          "firstName": {
+            "type": "string",
+            "nullable": true
+          },
+          "bio": {
+            "type": "string",
+            "nullable": true
+          },
+          "avatarUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "coverPhotoUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "location": {
+            "type": "string",
+            "nullable": true
+          },
+          "followersCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "followingCount": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "RegisterDto": {
+        "type": "object",
+        "properties": {
+          "userName": {
+            "type": "string",
+            "nullable": true
+          },
+          "firstName": {
+            "type": "string",
+            "nullable": true
+          },
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "password": {
+            "type": "string",
+            "nullable": true
+          },
+          "confirmPassword": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ShareCreateDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "nullable": true
+          },
+          "share": {
+            "$ref": "#/components/schemas/ShareDetailDto"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ShareDetailDto": {
+        "type": "object",
+        "properties": {
+          "postId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "shareUserName": {
+            "type": "string",
+            "nullable": true
+          },
+          "caption": {
+            "type": "string",
+            "nullable": true
+          },
+          "sharePlatform": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "post": {
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "securitySchemes": {
+      "Bearer": {
+        "type": "http",
+        "description": "Bearer {your JWT token}",
+        "scheme": "Bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "security": [
+    {
+      "Bearer": [ ]
+    }
+  ]
+}
