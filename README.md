@@ -50,7 +50,9 @@ Bash# Install the tool globally (only once)
 dotnet tool install -g Swashbuckle.AspNetCore.Cli
 
 # Build your project first
+```bash
 dotnet build
+```
 
 # Export swagger.json (replace DLL path and version as needed)
 dotnet swagger tofile --output swagger.json ./bin/Debug/net8.0/YourProject.dll v1
