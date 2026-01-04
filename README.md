@@ -67,9 +67,13 @@ You can preview the documentation locally without pushing to GitHub:
 Simplest way: Double-click and open index.html directly in your browser.
 Or use a local server (recommended to avoid CORS issues with Swagger UI):
 
+```bash
 Bashnpx serve .
+```
 # or
+```bash
 npx http-server .
+```
 # or
 python -m http.server 8000
 Then visit: http://localhost:3000 (or the displayed port)
