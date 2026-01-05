@@ -96,7 +96,10 @@ Bashnpx serve .
 npx http-server .
 ```
 # or
+```bash
 python -m http.server 8000
+```
+
 Then visit: http://localhost:3000 (or the displayed port)
 Important Notes
 
