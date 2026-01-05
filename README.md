@@ -40,16 +40,29 @@ Save to enable GitHub Pages.
 
 How to Get swagger.json
 1. From a Running API (if Swagger endpoint is exposed)
+
+  if config Swagger in `Program.cs`:
+  ```csharp
+  c.SwaggerDoc("v1", new OpenApiInfo
+  {
+      Title = "your project API",
+      Version = "v1"
+  });
+  ```
+  This can be configured in the backend or in configuration files across different backends
 Open your browser and visit the Swagger JSON endpoint, for example:
-texthttp://localhost:5000/swagger/v1/swagger.json
-https://api.yourdomain.com/swagger/v1/swagger.json
+- http://localhost:{port}/swagger/v1/swagger.json
+- https://api.yourdomain.com/swagger/v1/swagger.json
 
 Press Ctrl + S (Save As) and save the file as swagger.json.
 Copy this file into the root of the repository.
 
 2. From an ASP.NET Core Project (using Swashbuckle CLI)
 Bash# Install the tool globally (only once)
+
+```bash
 dotnet tool install -g Swashbuckle.AspNetCore.Cli
+```
 
 # Build your project first
 ```bash
@@ -57,12 +70,16 @@ dotnet build
 ```
 
 # Export swagger.json (replace DLL path and version as needed)
+```bash
 dotnet swagger tofile --output swagger.json ./bin/Debug/net8.0/YourProject.dll v1
+```
+
 3. From Other Frameworks
 
-NestJS: Access /api/json or use an export tool.
-Spring Boot: Access /v3/api-docs and save the JSON.
-FastAPI: Access /openapi.json.
+- NestJS: Access /api/json or use an export tool.
+- Spring Boot: Access /v3/api-docs and save the JSON.
+- FastAPI: Access /openapi.json.
+  
 Express + swagger-ui-express: Use a custom route or separate tool to export JSON.
 
 Local Preview (Optional)
