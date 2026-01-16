@@ -6,7 +6,7 @@
 
 A simple template for **hosting static Swagger/OpenAPI documentation** using GitHub Pages.
 
-You can visit **[picsocial-api-docs](https://tanas2k4.github.io/picsocial-api-docs/)**
+You can visit for example **[picsocial-api-docs](https://tanas2k4.github.io/picsocial-api-docs/)**
 
 No backend server required — just replace the `swagger.json` file and push to GitHub. Your interactive API documentation will be automatically deployed and publicly accessible.
 
